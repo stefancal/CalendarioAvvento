@@ -1,0 +1,9 @@
+# Codex instructions — Linea 24
+
+Read `docs/01-VISION.md`, `docs/02-ARCHITECTURE.md`, `docs/03-UI-UX.md`, `docs/04-GAME-RULES.md`, `docs/05-STORY.md`, `docs/06-PUZZLES.md`, `docs/07-VISUALS.md`, `docs/08-IMPLEMENTATION.md` before substantial work. These documents are the source of truth. `APPROVED` is binding; `PROVISIONAL` is not approved content; `TODO` must not be fabricated.
+
+Implement the smallest working solution. React + Vite + TypeScript + Tailwind; static Cloudflare Pages deployment. No database, Firebase, auth, API, paid services, state-management framework, animation framework or routing library unless demonstrably necessary. Prefer simple React state, localStorage, CSS, and native browser features. Use Italian UI copy. Touch-first iPad landscape, responsive portrait/mobile. Accessible buttons and readable text.
+
+Do not invent puzzle answers, narrative revelations, assets or completed days. Unfinished puzzles must show a clear development placeholder in development and a safe non-playable state in production, never a fake success path. No auto-completion. The calendar unlocks by date independently of puzzle completion; an item is earned only on correct puzzle completion. One optional subtle hint per day. Unlimited attempts. Never gate opening a day on completing earlier days. No fake security claims: a purely static site cannot strongly protect future content or answers from a technical user.
+
+Keep game content separate from components. Never hardcode per-day logic inside navigation. Maintain stable localStorage schema/version, handle malformed storage, and provide export/import of progress as JSON for backup. Make assets replaceable by manifest references and fallbacks. Document build and deployment. After each milestone run lint, typecheck, build and relevant tests; report results honestly. Do not modify documentation decisions without explicit user direction.
