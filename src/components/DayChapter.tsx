@@ -10,7 +10,7 @@ export function ChapterHeader({day, title}: {day: number; title?: string}) {
 export function DayScene({day}: {day: number}) {
   const [failed, setFailed] = useState(false)
   const number = String(day).padStart(2, '0')
-  const src = assetManifest.scenes?.[day] ?? `${import.meta.env.BASE_URL}assets/giorni/giorno-${number}/scene.png`
+  const src = assetManifest.scenes?.[day] ?? `${import.meta.env.BASE_URL}assets/days/day-${number}/scene.png`
   return <div className="day-scene" aria-hidden="true">{!failed && <img src={src} alt="" loading="lazy" onError={() => setFailed(true)}/>}</div>
 }
 

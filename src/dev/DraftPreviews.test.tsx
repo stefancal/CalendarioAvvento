@@ -10,7 +10,7 @@ import { completeDay } from '../game/engine'
 afterEach(() => {cleanup(); localStorage.clear()})
 describe('anteprime isolate', () => {
   it('keeps unfinished days draft and rejects completion for every answer', () => {
-    for (let day=3; day<=6; day++) {
+    for (let day=7; day<=24; day++) {
       const definition = days[day-1]
       expect(definition.status).toBe('draft')
       const progress = emptyProgress()

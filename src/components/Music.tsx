@@ -34,5 +34,5 @@ export function MusicButton({ music }: { music: Music }) {
   </button>
 }
 export function MusicSettings({ music }: { music: Music }) {
-  return <section className="music-settings"><h3>Musica</h3><label htmlFor="music-volume">Volume: {Math.round(music.preferences.volume * 100)}%</label><input id="music-volume" type="range" min="0" max="100" value={Math.round(music.preferences.volume * 100)} onChange={event => music.setVolume(Number(event.target.value) / 100)}/></section>
+  return <section className="music-settings"><p className="settings-section-label">Atmosfera</p><h3>Musica</h3><div className="settings-volume"><label htmlFor="music-volume">Volume</label><span>{Math.round(music.preferences.volume * 100)}%</span></div><input id="music-volume" type="range" min="0" max="100" value={Math.round(music.preferences.volume * 100)} onChange={event => music.setVolume(Number(event.target.value) / 100)}/></section>
 }

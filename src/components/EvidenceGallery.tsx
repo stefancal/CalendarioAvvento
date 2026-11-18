@@ -37,9 +37,9 @@ function EvidenceViewer({items, initialIndex, close}: {items: Evidence[]; initia
     <div className="evidence-viewer-header"><h2 id="evidence-viewer-title">{item.title}</h2><button ref={closeRef} type="button" className="evidence-close" onClick={() => dialogRef.current?.close()} aria-label="Chiudi documento">×</button></div>
     {items.length > 1 && <nav className="evidence-navigation" aria-label="Navigazione tra i reperti"><button type="button" disabled={index === 0} onClick={() => navigate(index - 1)}><span aria-hidden="true">←</span> Precedente</button><span className="evidence-count">{index + 1} / {items.length}</span><button type="button" disabled={index === items.length - 1} onClick={() => navigate(index + 1)}>Successivo <span aria-hidden="true">→</span></button></nav>}
     <div className="evidence-scroll" ref={scrollRef} tabIndex={0} aria-label="Immagine del reperto, scorri per esplorare">
+      {item.description && <p className="evidence-description">{item.description}</p>}
       {item.src && !failed ? <div className="evidence-full" style={{width: `${zoom * 100}%`}}><img src={item.src} alt={item.alt} onError={() => { setFailed(true); if (import.meta.env.DEV) console.warn(`Immagine non disponibile per il reperto: ${item.title}`, item.src) }}/></div> : item.fallbackText ? <article className="evidence-transcript" style={{width: `${zoom * 100}%`}}><p>{item.fallbackText}</p></article> : <p className="evidence-missing">{item.title} — immagine non disponibile.</p>}
       {item.src && !failed && item.fallbackText && <details className="evidence-accessible-text"><summary>Leggi la trascrizione</summary><p>{item.fallbackText}</p></details>}
-      {item.description && <p className="evidence-description">{item.description}</p>}
     </div>
     <div className="evidence-zoom" role="group" aria-label="Zoom del reperto">
       <svg className="evidence-zoom-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m14.5 14.5 5 5"/></svg>

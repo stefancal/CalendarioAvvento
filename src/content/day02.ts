@@ -14,26 +14,23 @@ Sotto il registro sporge una nota: «Uno dei nostri passeggeri ha percorso una t
 
 Dal fondo del vagone giunge un lieve tintinnio, simile a quello di una decorazione natalizia urtata dal vento. Ti volti, ma non vedi nessuno. Le lampade continuano a dondolare sopra il tavolino. Prendi posto e avvicini il primo foglio alla luce.`,
   documents: [
-    { id: 'clocks', title: 'Registro degli orologi', fallbackText: true, text: `LINEA 24 · REGISTRO DEGLI OROLOGI\nAnnotazioni di servizio\n\nAl segnale delle 21:00 a Valbruna, il quadrante di Pontebianco segna le 21:12.\n\nAl segnale delle 22:00 a Pontebianco, il quadrante di Selvaria segna le 21:53.\n\nAl segnale delle 23:00 a Selvaria, il quadrante di Capolinea Nord segna le 23:18.\n\nGli orari dei biglietti sono registrati secondo il quadrante locale di ciascuna stazione.` },
+    { id: 'clocks', title: 'Registro degli orologi', fallbackText: true, description: 'Per le rilevazioni fanno fede gli orari scritti; le lancette illustrate sono decorative.', text: `LINEA 24 · REGISTRO DEGLI OROLOGI\nAnnotazioni di servizio\n\nAl segnale delle 21:00 a Valbruna, il quadrante di Pontebianco segna le 21:12.\n\nAl segnale delle 22:00 a Pontebianco, il quadrante di Selvaria segna le 21:53.\n\nAl segnale delle 23:00 a Selvaria, il quadrante di Capolinea Nord segna le 23:18.\n\nGli orari dei biglietti sono registrati secondo il quadrante locale di ciascuna stazione.` },
     { id: 'routes', title: 'Prospetto delle tratte', fallbackText: true, text: `LINEA 24 · PROSPETTO DELLE TRATTE\nTempi minimi di percorrenza\n\nValbruna → Pontebianco: 18 minuti\nPontebianco → Selvaria: 24 minuti\nSelvaria → Capolinea Nord: 16 minuti\n\nLe soste possono prolungare il viaggio. Nessuna tratta può essere percorsa in meno del tempo indicato; per attraversare più tratte si sommano i rispettivi tempi minimi.` },
     { id: 'tickets', title: 'Biglietti ritrovati', fallbackText: true, text: `LINEA 24 · BIGLIETTI RITROVATI\nOrari indicati dai quadranti locali\n\n041  Valbruna 21:00 → Pontebianco 21:34\n042  Pontebianco 21:40 → Selvaria 22:05\n043  Selvaria 22:10 → Capolinea Nord 22:49\n044  Valbruna 21:20 → Selvaria 22:08\n045  Pontebianco 22:00 → Capolinea Nord 22:53\n046  Valbruna 22:15 → Capolinea Nord 23:17` },
   ],
   puzzle: { type: 'numeric', label: 'Numero del biglietto a tre cifre', digits: 3, subtitle: 'Quale biglietto racconta un viaggio che non può essere avvenuto?', prompt: 'Inserisci il numero del biglietto.', validate: value => value === '046' },
   hintTitle: 'La filastrocca degli orologi',
-  hint: `Se un orologio corre avanti,
-non fidarti dei suoi istanti.
+  hint: `Quattro orologi, quattro stazioni,
+segnano il tempo in mille direzioni.
 
-Se un altro resta un poco indietro,
-cerca un tempo più sincero.
+Se due rintocchi insieme son nati,
+non è detto che sian segnati uguali.
 
-Prima accorda ogni quadrante,
-poi misura il viandante.
+Rimetti ogni lancetta al suo posto,
+poi conta il viaggio, qualunque sia il costo.
 
-Tra partenza e destinazione,
-conta il minimo del vagone.
-
-Se il viaggio è troppo breve,
-c'è un segreto sotto la neve.`,
+Ma se un treno corre più del possibile,
+tra quei biglietti c'è un viaggio impossibile.`,
   success: `Il biglietto 046 rimane fra le tue dita. Gli altri viaggi concedono al treno il tempo necessario; questo no. Lo rigiri piano, aspettandoti di trovare il retro bianco come quello degli altri.
 
 Una firma affiora sotto la luce: Elia Vetro.

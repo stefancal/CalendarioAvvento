@@ -21,7 +21,7 @@ La base tecnica è disponibile per l'inserimento dei contenuti; **il regalo non 
 
 ## Verifiche eseguite
 
-- Audit finale: `npm run lint`, `npm run typecheck`, `npm run test` e `npm run build` superati; 30 test in 6 file. La checklist completa, con limiti e attività residue, è in `CHECKLIST-FINALE.md`.
+- Audit finale: `npm run lint`, `npm run typecheck`, `npm run test` e `npm run build` superati; 30 test in 6 file. La checklist completa, con limiti e attività residue, è in `FINAL-CHECKLIST.md`.
 - Test automatici: confini di mezzanotte per tutte le date, validatori, completamento, indizio, inventario anche fuori ordine, errori di storage, importazione, esportazione, ricaricamento dello stato, blocco futuro, diario, widget e fallback immagine. Un test di integrazione verifica risposta errata, acquisizione dopo risposta corretta e ripristino di stato, diario e sacchetto dopo un nuovo montaggio. I test di interfaccia usano DOM simulato, non un browser reale.
 - Anteprima HTTP locale della build: pagina principale e asset JavaScript rispondono 200. Ricerca nella build: fixture di sviluppo assente.
 - Dipendenze dirette esaminate; `npm audit --omit=dev` non segnala vulnerabilità. L'audit completo segnala 12 vulnerabilità alte nella catena di sviluppo; la correzione proposta coinvolge anche cambi di versione principali e richiede valutazione e nuove verifiche.

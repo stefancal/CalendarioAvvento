@@ -7,6 +7,9 @@ import { DayPanel, Inventory } from './Game'
 import { emptyProgress } from '../game/progress'
 import { assetManifest } from '../content/assets'
 import type { DayDefinition, InventoryItem } from '../game/types'
+import { day04 } from '../content/day04'
+import { day06 } from '../content/day06'
+import { loadProgress, saveProgress } from '../game/progress'
 const textDay: DayDefinition = { day:1, status:'ready', title:'Prova', intro:'Apertura', documents:[], puzzle:{type:'text',label:'Codice',prompt:'Prova',validate: value => value === '123'}, hint:'Indizio di prova', success:'Risolto', dialogue:[{speaker:'Voce',text:'Fine'}], diary:'Diario' }
 const fieldDay: DayDefinition = { ...textDay, day:2, puzzle:{type:'fields',prompt:'Due campi',fields:[{id:'a',label:'Primo'},{id:'b',label:'Secondo'}],validate: value => value.a === 'a' && value.b === 'b',notes:{rows:['Riga'],columns:['Colonna']}} }
 const switchDay: DayDefinition = { ...textDay, day:3, puzzle:{type:'switches',prompt:'Seleziona',labels:['A','B','C','D','E','F','G','H'],validate: value => value[0] && value.slice(1).every(v => !v)} }
@@ -75,6 +78,7 @@ describe('interactive puzzle flow', () => {
     assetManifest.items = {i:{silhouette:'/assets/items/sagoma.webp',image:'/assets/items/oggetto.webp'}}
     assetManifest.documents = {1:{d:'/assets/documents/scheda.webp'}}
     Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {configurable:true, value: function (this: HTMLDialogElement) { this.setAttribute('open', '') }})
+    Object.defineProperty(HTMLDialogElement.prototype, 'close', {configurable:true, value: function (this: HTMLDialogElement) { this.removeAttribute('open'); this.dispatchEvent(new Event('close')) }})
     const user = userEvent.setup()
     const view = render(<><DayPanel day={{...textDay, documents:[{id:'d',title:'Scheda',text:'Trascrizione'}]}} progress={emptyProgress()} update={() => {}}/><Inventory items={[item]} completed={[]}/></>)
     expect(view.container.querySelector('.inventory-card img')?.getAttribute('src')).toBe('/assets/items/sagoma.webp')
@@ -84,15 +88,54 @@ describe('interactive puzzle flow', () => {
     expect(view.container.querySelector('.inventory-card.exhausted img')?.getAttribute('src')).toBe('/assets/items/oggetto.webp')
     await user.click(screen.getByRole('button',{name:/Oggetto/}))
     expect(view.container.querySelector('.item-detail.exhausted img')?.getAttribute('src')).toBe('/assets/items/oggetto.webp')
-    await user.click(screen.getByRole('button',{name:'Ingrandisci immagine'}))
-    expect(view.container.querySelector('.item-image-scroll.zoomed')).not.toBeNull()
-    await user.click(screen.getByRole('button',{name:'Riduci immagine'}))
-    expect(view.container.querySelector('.item-image-scroll.zoomed')).toBeNull()
-    Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal')
+    const imageButton = screen.getByRole('button',{name:'Apri immagine di Oggetto'})
+    await user.click(imageButton)
+    expect(screen.getByAltText('Oggetto').getAttribute('src')).toBe('/assets/items/oggetto.webp')
+    await user.click(screen.getByRole('button',{name:'Ingrandisci +'}))
+    expect(screen.getByText('125%')).toBeTruthy()
+    await user.click(screen.getByRole('button',{name:'Chiudi documento'}))
+    expect(document.activeElement).toBe(imageButton)
+    Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal'); Reflect.deleteProperty(HTMLDialogElement.prototype, 'close')
   })
   it('submits all eight switch states', async () => {
     const user=userEvent.setup(); render(<Harness day={switchDay}/>); expect(screen.getAllByRole('checkbox')).toHaveLength(8)
-    await user.click(screen.getByText('Conferma soluzione')); expect(screen.getByText(/risposta giusta/)).toBeTruthy()
-    await user.click(screen.getByLabelText('A')); await user.click(screen.getByText('Conferma soluzione')); expect(screen.getByText('Tappa completata')).toBeTruthy()
+    await user.click(screen.getByText('Attiva il circuito')); expect(screen.getByText(/risposta giusta/)).toBeTruthy()
+    await user.click(screen.getByLabelText('A')); await user.click(screen.getByText('Ripristina le leve')); expect((screen.getByLabelText('A') as HTMLInputElement).checked).toBe(false)
+    await user.click(screen.getByLabelText('A')); await user.click(screen.getByText('Attiva il circuito')); expect(screen.getByText('Tappa completata')).toBeTruthy()
+    await user.click(screen.getByText('Riesamina il quadro'))
+    await user.click(screen.getByText('Ripristina le leve'))
+    await user.click(screen.getByText('Attiva il circuito'))
+    expect(screen.getByText('Tappa completata')).toBeTruthy()
+  })
+  it('restores circuit positions after a remount and clears them with reset', async () => {
+    localStorage.clear()
+    function SavedCircuit() {
+      const [progress, setProgress] = useState(loadProgress)
+      return <DayPanel day={day04} progress={progress} update={next => { setProgress(next); saveProgress(next) }}/>
+    }
+    const user = userEvent.setup()
+    const view = render(<SavedCircuit/>)
+    await user.click(screen.getByLabelText('A'))
+    await user.click(screen.getByLabelText('C'))
+    view.unmount()
+    render(<SavedCircuit/>)
+    expect((screen.getByLabelText('A') as HTMLInputElement).checked).toBe(true)
+    expect((screen.getByLabelText('C') as HTMLInputElement).checked).toBe(true)
+    await user.click(screen.getByText('Ripristina le leve'))
+    expect(loadProgress().switchStates?.['4']).toEqual(Array(8).fill(false))
+    localStorage.clear()
+  })
+  it('allows the watch puzzle without the earlier key and reveals its ending only after the answer', async () => {
+    const user = userEvent.setup()
+    function WatchDay() { const [progress, setProgress] = useState(emptyProgress); return <DayPanel day={day06} progress={progress} update={setProgress}/> }
+    render(<WatchDay/>)
+    expect(screen.queryByText(/una minuscola fotografia/i)).toBeNull()
+    await user.type(screen.getByLabelText('Numero dell’orologio a due cifre'), '11')
+    await user.click(screen.getByText('Conferma soluzione'))
+    expect(screen.getByText(/Qualche dettaglio del registro/)).toBeTruthy()
+    await user.clear(screen.getByLabelText('Numero dell’orologio a due cifre'))
+    await user.type(screen.getByLabelText('Numero dell’orologio a due cifre'), '37')
+    await user.click(screen.getByText('Conferma soluzione'))
+    expect(screen.getByText(/una minuscola fotografia/i)).toBeTruthy()
   })
 })

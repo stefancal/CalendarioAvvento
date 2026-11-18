@@ -12,6 +12,6 @@ Per sei valori a,b,c,d,e,f si calcolano, nell'ordine: |a−b| (scarto testa), c+
 
 Indizio: osservare le lettere stampate diversamente e confrontarle con biglietto e registro. Ricompensa: tessera metallica 24; ultimo utilizzo ancora da definire, quindi non viene esaurita.
 
-Asset: `public/assets/giorni/giorno-01/letter.png`, `ticket.png`, `railway-register.png`, `metal-token.png`, e `public/assets/ui/sack.png`. Stazione innevata assente: sfondo CSS. Testi HTML sopra gli asset, con fallback CSS.
+Asset: `public/assets/days/day-01/letter.png`, `ticket.png`, `railway-register.png`, `metal-token.png`, e `public/assets/ui/sack.png`. Stazione innevata assente: sfondo CSS. Testi HTML sopra gli asset, con fallback CSS.
 
 Da approvare: regola e dataset del registro, chiarezza e difficoltà attraverso playtest, testo narrativo e resa grafica. Verificare su iPad Safari reale in entrambi gli orientamenti, inclusi zoom e VoiceOver.
