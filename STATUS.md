@@ -1,3 +1,7 @@
+# Aggiornamento — prototipo giorno 1
+
+Il giorno 1 è giocabile nel calendario con tre documenti, codice, indizio, diario e tessera persistenti. In sviluppo il pulsante «Prova: apri tutte le giornate» consente l’accesso prima della data; in produzione resta il normale sblocco. Il registro è una proposta da sottoporre ad approvazione, non ancora canonica: regola e limiti sono in `docs/puzzles/DAY-01.md`. Gli altri giorni rimangono draft. La stazione innevata non è disponibile. È necessaria una prova su iPad Safari e un playtest della deducibilità.
+
 # Stato del progetto — 18 novembre 2026
 
 La base tecnica è disponibile per l'inserimento dei contenuti; **il regalo non è pronto**. Tutti i 24 giorni canonici sono `draft` e non giocabili.

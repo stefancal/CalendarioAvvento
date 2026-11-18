@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react'
 import { assetManifest } from '../content/assets'
-import { DocumentViewer } from '../components/Game'
+import { DocumentViewer } from '../components/EvidenceGallery'
 import { PuzzleForm } from '../puzzles/PuzzleForm'
 import type { DocumentDefinition } from '../game/types'
 import { draftPlans } from './dayPlans'

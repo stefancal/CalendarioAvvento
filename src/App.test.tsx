@@ -5,7 +5,7 @@ import App from './App'
 import { assetManifest } from './content/assets'
 import { STORAGE_KEY } from './game/progress'
 vi.mock('./content/days', () => ({days: [
-  {day:1,status:'ready',title:'Test uno',intro:'',documents:[],puzzle:{type:'text',label:'Risposta',prompt:'',validate:(v:string) => v === 'ok'},success:'Completato',diary:'Storia uno'},
+  {day:1,status:'ready',title:'Test uno',intro:'',documents:[],puzzle:{type:'text',label:'Risposta',prompt:'',validate:(v:string) => v === 'ok'},hint:'Rima di prova',success:'Completato',diary:'Storia uno'},
   {day:2,status:'ready',title:'Test due',intro:'',documents:[],puzzle:{type:'text',label:'Risposta',prompt:'',validate:(v:string) => v === 'ok'},success:'Completato',diary:'Storia futura'},
   {day:3,status:'draft'},
 ]}))
@@ -22,6 +22,48 @@ beforeEach(() => {
 })
 afterEach(() => {cleanup(); assetManifest.sackIcon = '/assets/ui/sack.png'; vi.useRealTimers(); vi.restoreAllMocks(); Reflect.deleteProperty(HTMLDialogElement.prototype,'showModal'); Reflect.deleteProperty(HTMLDialogElement.prototype,'close')})
 describe('application integration', () => {
+  it('keeps an earned item in the sack after ending the development date preview and reloading', () => {
+    vi.setSystemTime(new Date('2026-11-18T12:00:00Z'))
+    const view = render(<App/>)
+    fireEvent.click(screen.getByRole('button',{name:'Prova: apri tutte le giornate'}))
+    fireEvent.click(screen.getByRole('button',{name:/1 dicembre, disponibile/}))
+    fireEvent.change(screen.getByRole('textbox',{name:'Risposta'}),{target:{value:'ok'}})
+    fireEvent.click(screen.getByRole('button',{name:'Conferma soluzione'}))
+    expect(screen.getByText('Aggiunto al sacchetto degli indizi')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button',{name:'Torna al calendario'}))
+    fireEvent.click(screen.getByRole('button',{name:'Disattiva prova calendario'}))
+    expect((screen.getByRole('button',{name:/1 dicembre, si apre/}) as HTMLButtonElement).disabled).toBe(true)
+    fireEvent.click(screen.getByRole('button',{name:'Apri sacchetto degli indizi'}))
+    expect(screen.getByRole('button',{name:/Oggetto test/})).toBeTruthy()
+    view.unmount()
+    render(<App/>)
+    expect(screen.queryByText('Aggiunto al sacchetto degli indizi')).toBeNull()
+    fireEvent.click(screen.getByRole('button',{name:'Apri sacchetto degli indizi'}))
+    expect(screen.getByRole('button',{name:/Oggetto test/})).toBeTruthy()
+  })
+  it('asks before revealing the hint, saves it and allows it to be read again', () => {
+    const view = render(<App/>)
+    fireEvent.click(screen.getByRole('button',{name:/1 dicembre, disponibile/}))
+    const trigger = screen.getByRole('button',{name:'Parla con Lumi'})
+    trigger.focus()
+    fireEvent.click(trigger)
+    expect(screen.queryByText('Rima di prova')).toBeNull()
+    fireEvent.click(screen.getByRole('button',{name:'Non ancora'}))
+    expect(document.activeElement).toBe(trigger)
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).revealedHintDayIds).toEqual([])
+    fireEvent.click(trigger)
+    fireEvent.click(screen.getByRole('button',{name:'Sì, ascolto'}))
+    expect(screen.getByText('Rima di prova')).toBeTruthy()
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).revealedHintDayIds).toEqual([1])
+    fireEvent.click(screen.getByRole('button',{name:'Chiudi Lumi'}))
+    view.unmount()
+    window.history.replaceState(null, '', '#/day/01')
+    render(<App/>)
+    fireEvent.click(screen.getByRole('button',{name:'Parla con Lumi'}))
+    expect(screen.queryByText('Rima di prova')).toBeNull()
+    fireEvent.click(screen.getByRole('button',{name:'Sì, ascolto'}))
+    expect(screen.getByText('Rima di prova')).toBeTruthy()
+  })
   it('opens future days in development preview and restores date locks when disabled', () => {
     render(<App/>)
     expect((screen.getByRole('button',{name:/2 dicembre, si apre/}) as HTMLButtonElement).disabled).toBe(true)
@@ -32,6 +74,22 @@ describe('application integration', () => {
     fireEvent.click(screen.getByRole('button',{name:'Torna al calendario'}))
     fireEvent.click(screen.getByRole('button',{name:'Disattiva prova calendario'}))
     expect((screen.getByRole('button',{name:/2 dicembre, si apre/}) as HTMLButtonElement).disabled).toBe(true)
+  })
+  it('updates the travel plaque after completion, import and reset', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    const {container} = render(<App/>)
+    expect(screen.getByRole('status', {name: 'Viaggio: 0 giornate completate su 24'}).textContent).toContain('00 / 24')
+    fireEvent.click(screen.getByRole('button', {name: /1 dicembre, disponibile/}))
+    fireEvent.change(screen.getByLabelText('Risposta'), {target:{value:'ok'}})
+    fireEvent.click(screen.getByRole('button', {name:'Conferma soluzione'}))
+    expect(screen.getByRole('status', {name: 'Viaggio: 1 giornate completate su 24'}).textContent).toContain('01 / 24')
+    fireEvent.click(screen.getByRole('button', {name:'Torna al calendario'}))
+    fireEvent.click(screen.getByRole('button', {name:'Backup progressi'}))
+    const input = container.querySelector('input[type=file]')!
+    fireEvent.change(input, {target:{files:[{text: async () => JSON.stringify({version:1, completedDayIds:[1, 3, 8], revealedHintDayIds:[], lastVisitedDay:null})}]}})
+    await waitFor(() => expect(screen.getByRole('status', {name: 'Viaggio: 3 giornate completate su 24'}).textContent).toContain('03 / 24'))
+    fireEvent.click(screen.getByRole('button', {name:'Cancella progressi'}))
+    expect(screen.getByRole('status', {name: 'Viaggio: 0 giornate completate su 24'}).textContent).toContain('00 / 24')
   })
   it('shows the supplied train and keeps the calendar usable if the image fails', () => {
     render(<App/>)
@@ -46,13 +104,13 @@ describe('application integration', () => {
     fireEvent.click(screen.getByRole('button',{name:/1 dicembre, disponibile/}))
     const input = screen.getByLabelText('Risposta')
     fireEvent.change(input,{target:{value:'errata'}})
-    fireEvent.click(screen.getByRole('button',{name:'Verifica'}))
-    expect(screen.getByText(/Risposta non corretta/)).toBeTruthy()
+    fireEvent.click(screen.getByRole('button',{name:'Conferma soluzione'}))
+    expect(screen.getByText(/risposta giusta/)).toBeTruthy()
     fireEvent.click(screen.getByRole('button',{name:'Apri sacchetto degli indizi'}))
     expect(screen.getByLabelText('Oggetto ancora da scoprire')).toBeTruthy()
     fireEvent.click(screen.getByRole('button',{name:'Chiudi'}))
     fireEvent.change(input,{target:{value:'ok'}})
-    fireEvent.click(screen.getByRole('button',{name:'Verifica'}))
+    fireEvent.click(screen.getByRole('button',{name:'Conferma soluzione'}))
     expect(screen.getByText('Tappa completata')).toBeTruthy()
     fireEvent.click(screen.getByRole('button',{name:'Torna al calendario'}))
     expect(screen.getByRole('button',{name:/1 dicembre, completato/})).toBeTruthy()
@@ -117,7 +175,7 @@ describe('application integration', () => {
   it('imports valid progress after confirmation and rejects invalid versions without changing saved data', async () => {
     vi.spyOn(window,'confirm').mockReturnValue(true)
     const {container, unmount} = render(<App/>)
-    fireEvent.click(screen.getByRole('button',{name:'Aiuto e backup'}))
+    fireEvent.click(screen.getByRole('button',{name:'Backup progressi'}))
     const input = container.querySelector('input[type=file]')!
     const valid = {text: async () => JSON.stringify({version:1,completedDayIds:[1],revealedHintDayIds:[],lastVisitedDay:1})}
     fireEvent.change(input,{target:{files:[valid]}})
@@ -140,7 +198,7 @@ describe('application integration', () => {
     Object.defineProperty(URL,'revokeObjectURL',{configurable:true,value:vi.fn()})
     vi.spyOn(HTMLAnchorElement.prototype,'click').mockImplementation(() => {})
     render(<App/>)
-    fireEvent.click(screen.getByRole('button',{name:'Aiuto e backup'}))
+    fireEvent.click(screen.getByRole('button',{name:'Backup progressi'}))
     fireEvent.click(screen.getByRole('button',{name:'Esporta JSON'}))
     expect(create).toHaveBeenCalledOnce()
     expect((create.mock.calls[0] as unknown as [Blob])[0].type).toBe('application/json')

@@ -1,0 +1,46 @@
+/* Targhetta ferroviaria: dimensioni e allineamento indipendenti dal contenuto. */
+.topbar .nav-tools { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.topbar .journey-plaque { min-width: 142px; padding: 7px 14px 6px; border: 1px solid #ad8d62; background: #2b212a; color: #f2e4cf; text-align: center; box-shadow: inset 0 0 0 3px #2b212a, inset 0 0 0 4px rgba(213,178,123,.25); }
+.topbar .journey-plaque > span { display: block; color: #d5b27b; font: 600 9px/1.3 var(--font-label); letter-spacing: .13em; white-space: nowrap; }
+.topbar .journey-plaque strong { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 3px; color: #f2e4cf; font: 18px/1.2 var(--font-display); letter-spacing: .08em; white-space: nowrap; }
+.topbar .journey-plaque svg { flex: none; width: 18px; height: 18px; color: #d5b27b; }
+@media (max-width: 800px) {
+  .topbar { grid-template-columns: minmax(0, 1fr) auto; }
+  .topbar .brand { grid-column: 1; grid-row: 1; }
+  .topbar .nav-tools { grid-column: 2; grid-row: 1; }
+  .topbar nav { grid-column: 1 / -1; grid-row: 2; }
+  .topbar .journey-plaque { min-width: 120px; padding: 6px 9px; }
+  .topbar .journey-plaque strong { font-size: 16px; }
+}
+@media (max-width: 420px) { .topbar .nav-tools { gap: 2px; } .topbar .journey-plaque { min-width: 100px; padding: 5px; } .topbar .journey-plaque > span { font-size: 8px; } }
+.topbar .music-button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; flex: none; min-width: 64px; min-height: 58px; padding: 7px 10px; border: 1px solid #ad8d62; border-radius: 0; background: #2b212a; color: #f2d6a3; box-shadow: inset 0 0 0 3px #2b212a, inset 0 0 0 4px rgba(213,178,123,.25); cursor: pointer; text-decoration: none; }
+.topbar .music-button:hover { background: #45303a; color: #fff0cf; }
+.topbar .music-button:focus-visible { outline: 2px solid #f4d6a1; outline-offset: 3px; }
+.music-note { display: block; width: 25px; height: 25px; flex: none; }
+.music-status { color: #e6c994; font: 600 9px/1.2 var(--font-label); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+@media (max-width: 420px) { .topbar .music-button { min-width: 55px; min-height: 50px; padding: 5px 7px; } .music-note { width: 22px; height: 22px; } .music-status { font-size: 8px; } }
+ .music-dialog {
+  width: min(520px, calc(100vw - 32px)); max-width: calc(100vw - 32px);
+  height: fit-content; max-height: min(88vh, 88dvh); margin: auto;
+  padding: clamp(30px, 6vw, 48px); overflow: auto; text-align: center;
+  border: 1px solid #ac8a63; color: #4b3331;
+  background: radial-gradient(ellipse at 50% 0%, #fff9e9, transparent 65%), #f1e3cf;
+  box-shadow: inset 0 0 0 7px #f1e3cf, inset 0 0 0 8px #c6aa87, 0 24px 75px rgba(0, 0, 0, .55);
+}
+.music-dialog::backdrop { background: rgba(8, 9, 15, .82); }
+.music-emblem { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 22px; border: 1px solid #ac8a63; border-radius: 50%; color: #80503c; background: #f8eddb; font: 30px/1 var(--font-display); box-shadow: inset 0 0 0 4px #f8eddb, inset 0 0 0 5px #dcc7a8; }
+.music-kicker { margin: 0 0 10px; color: #876547; font: 600 10px/1.4 var(--font-label); letter-spacing: .16em; text-transform: uppercase; }
+.music-dialog h2 { margin: 0; color: #4a3032; font: normal clamp(27px, 5vw, 36px)/1.2 var(--font-display); }
+.music-intro { max-width: 365px; margin: 20px auto 26px; color: #67534a; font: 16px/1.75 var(--font-display); }
+.music-dialog .actions { justify-content: center; gap: 10px; }
+.music-dialog .primary, .music-dialog .secondary { min-height: 48px; }
+.music-dialog .secondary { border-color: #ad957c; color: #60463c; }
+@media (max-width: 480px) { .music-dialog .actions { flex-direction: column; } .music-dialog .actions button { width: 100%; } }
+.music-settings { margin-top: 24px; padding-top: 12px; border-top: 1px solid #baa48c; }
+.music-settings label { display: block; margin-bottom: 8px; }
+.music-settings input { width: min(100%, 300px); accent-color: #713a3f; }
+/* Le targhette condividono l?altezza, con larghezze adatte al contenuto. */
+.topbar .music-button, .topbar .journey-plaque { box-sizing: border-box; height: 64px; }
+.topbar .journey-plaque { display: flex; flex-direction: column; justify-content: center; }
+@media (max-width: 800px) { .topbar .music-button, .topbar .journey-plaque { height: 58px; } }
+@media (max-width: 420px) { .topbar .music-button, .topbar .journey-plaque { height: 52px; } }
